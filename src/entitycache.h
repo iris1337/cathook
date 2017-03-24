@@ -32,36 +32,6 @@ struct mstudiobbox_t;
 #define CE_BYTE(entity, offset) CE_VAR(entity, offset, unsigned char)
 #define CE_VECTOR(entity, offset) CE_VAR(entity, offset, Vector)
 
-#define CE_GOOD_NO_DORMANT_CHECK(entity) (!g_Settings.bInvalid && dynamic_cast<CachedEntity*>(entity) && dynamic_cast<IClientEntity*>(entity->m_pEntity))
-#define CE_GOOD(entity) (!g_Settings.bInvalid && dynamic_cast<CachedEntity*>(entity) && dynamic_cast<IClientEntity*>(entity->m_pEntity) && (g_IEntityList->GetClientEntity(entity->m_IDX) == entity->m_pEntity) && entity->m_pEntity->GetIClientEntity() && !entity->m_pEntity->GetIClientEntity()->IsDormant())
-#define CE_BAD(entity) (!CE_GOOD(entity))
-
-#define IDX_GOOD(idx) (idx >= 0 && idx < HIGHEST_ENTITY && idx < MAX_ENTITIES)
-#define IDX_BAD(idx) !IDX_GOOD(idx)
-
-#define PROXY_ENTITY false
-
-#if PROXY_ENTITY == true
-#define RAW_ENT(ce) ce->InternalEntity()
-#else
-#define RAW_ENT(ce) ce->m_pEntity
-#endif
-
-
-// This will be used later. maybe.
-#define ENTITY_ITERATE_INT(iterator, entity, max) \
-	for (int iterator = 0; iterator < max; iterator++) { \
-		CachedEntity* entity = gEntityCache.GetEntity(iterator); \
-		if (CE_BAD(entity)) continue;
-
-#define ENTITY_ITERATE_EVERYTHING(iterator, entity) \
-	ENTITY_ITERATE_INT(iterator, entity, gEntityCache.m_nMax)
-
-#define ENTITY_ITERATE_PLAYERS(iterator, entity) \
-	ENTITY_ITERATE_INT(iterator, entity, MIN(gEntityCache.m_nMax, 64))
-
-#define END_ENTITY_ITERATING }
-
 #define HIGHEST_ENTITY gEntityCache.m_nMax
 #define ENTITY(idx) gEntityCache.GetEntity(idx)
 
@@ -106,6 +76,10 @@ public:
 	~CachedEntity();
 
 	void Update(int idx);
+	inline bool good() const;
+	inline bool bad() const;
+	inline IClientEntity* InternalEntity() const;
+
 
 	// Entity fields start here.
 
@@ -145,8 +119,6 @@ public:
 
 	EntityHitboxCache* m_pHitboxCache;
 	int m_IDX;
-	IClientEntity* InternalEntity();
-	IClientEntity* m_pEntity;
 	Vector m_vecVOrigin;
 	Vector m_vecVelocity;
 	Vector m_vecAcceleration;

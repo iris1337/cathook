@@ -12,7 +12,6 @@
 #include "profiler.h"
 
 CachedEntity::CachedEntity() {
-	m_pEntity = nullptr;
 	m_Bones = 0;
 	m_Bones = new matrix3x4_t[MAXSTUDIOBONES];
 	m_pHitboxCache = new EntityHitboxCache(this);
@@ -25,8 +24,8 @@ CachedEntity::~CachedEntity() {
 	delete m_pHitboxCache;
 }
 
-IClientEntity* CachedEntity::InternalEntity() {
-	return m_pEntity;
+inline IClientEntity* CachedEntity::InternalEntity() const {
+	return g_IEntityList->GetClientEntity(m_IDX);
 }
 
 void EntityCache::Invalidate() {
@@ -34,17 +33,25 @@ void EntityCache::Invalidate() {
 	m_pArray = new CachedEntity[MAX_ENTITIES]();
 }
 
+inline bool CachedEntity::good() const {
+	IClientEntity* entity = InternalEntity();
+	if (!entity) return false;
+	if (entity->IsDormant()) return false;
+	return true;
+}
+
+inline bool CachedEntity::bad() const {
+	return !good();
+}
+
 void CachedEntity::Update(int idx) {
 	SEGV_BEGIN
-
 	m_IDX = idx;
-	m_pEntity = g_IEntityList->GetClientEntity(idx);
-	if (!m_pEntity) {
-		return;
-	}
-	m_iClassID = m_pEntity->GetClientClass()->m_ClassID;
+	if (bad()) return;
+	IClientEntity* entity = InternalEntity();
+	m_iClassID = entity->GetClientClass()->m_ClassID;
 
-	Vector origin = m_pEntity->GetAbsOrigin();
+	Vector origin = entity->GetAbsOrigin();
 	//if (TF2 && EstimateAbsVelocity) EstimateAbsVelocity(m_pEntity, m_vecVelocity);
 	/*if ((gvars->realtime - m_fLastUpdate) >= 0.05f) {
 		//if (gvars->tickcount - m_nLastTick > 1) {
@@ -101,7 +108,7 @@ void CachedEntity::Update(int idx) {
 		m_Type = EntityType::ENTITY_GENERIC;
 	}
 
-	if (CE_GOOD(g_pLocalPlayer->entity)) {
+	if (g_pLocalPlayer->entity->bad()) {
 		m_flDistance = (g_pLocalPlayer->v_Origin.DistTo(m_vecOrigin));
 	}
 	m_bAlivePlayer = false;
