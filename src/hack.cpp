@@ -156,7 +156,12 @@ void hack::Initialize() {
 	hooks::hkClientMode->HookMethod((void*)OverrideView_hook, hooks::offOverrideView);
 	hooks::hkClientMode->HookMethod((void*)LevelInit_hook, hooks::offLevelInit);
 	hooks::hkClientMode->HookMethod((void*)LevelShutdown_hook, hooks::offLevelShutdown);
+	//hooks::hkClientMode->HookMethod((void*)PostRender_hook, off_PostRender);
 	hooks::hkClientMode->Apply();
+	hooks::hkRenderView = new hooks::VMTHook();
+	hooks::hkRenderView->Init((void*)g_IVRenderView, 0);
+	hooks::hkRenderView->HookMethod((void*)SceneEnd_hook, off_SceneEnd);
+	hooks::hkRenderView->Apply();
 	hooks::hkStudioRender = new hooks::VMTHook();
 	hooks::hkStudioRender->Init((void*)g_IStudioRender, 0);
 	hooks::hkStudioRender->HookMethod((void*)BeginFrame_hook, hooks::offBeginFrame);

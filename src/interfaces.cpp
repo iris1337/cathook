@@ -44,6 +44,9 @@ IAchievementMgr* g_IAchievementMgr = nullptr;
 ISteamUserStats* g_ISteamUserStats = nullptr;
 IStudioRender* g_IStudioRender = nullptr;
 IVDebugOverlay* g_IVDebugOverlay = nullptr;
+IVModelRender* g_IVModelRender = nullptr;
+IMaterialSystem* g_IMaterialSystem = nullptr;
+IVRenderView* g_IVRenderView = nullptr;
 
 template<typename T>
 T* BruteforceInterface(std::string name, sharedobj::SharedObject* object, int start) {
@@ -69,6 +72,7 @@ void CreateInterfaces() {
 	g_ICenterPrint = BruteforceInterface<ICenterPrint>("VCENTERPRINT", sharedobj::client);
 	g_ICvar = BruteforceInterface<ICvar>("VEngineCvar", sharedobj::vstdlib);
 	g_IEngine = BruteforceInterface<IVEngineClient013>("VEngineClient", sharedobj::engine);
+	g_IVRenderView = BruteforceInterface<IVRenderView>("VEngineRenderView", sharedobj::engine);
 	g_AppID = g_IEngine->GetAppID();
 	g_IEntityList = BruteforceInterface<IClientEntityList>("VClientEntityList", sharedobj::client);
 	g_IPanel = BruteforceInterface<vgui::IPanel>("VGUI_Panel", sharedobj::vgui2);
@@ -81,6 +85,8 @@ void CreateInterfaces() {
 	g_IInputSystem = BruteforceInterface<IInputSystem>("InputSystemVersion", sharedobj::inputsystem);
 	g_IStudioRender = BruteforceInterface<IStudioRender>("VStudioRender", sharedobj::studiorender);
 	g_IVDebugOverlay = BruteforceInterface<IVDebugOverlay>("VDebugOverlay", sharedobj::engine);
+	g_IMaterialSystem = BruteforceInterface<IMaterialSystem>("VMaterialSystem", sharedobj::materialsystem);
+	g_IVModelRender = BruteforceInterface<IVModelRender>("VEngineModel", sharedobj::engine);
 	HSteamPipe sp = g_ISteamClient->CreateSteamPipe();
 	HSteamUser su = g_ISteamClient->ConnectToGlobalUser(sp);
 	g_ISteamFriends = g_ISteamClient->GetISteamFriends(su, sp, "SteamFriends002");

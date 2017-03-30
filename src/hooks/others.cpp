@@ -96,6 +96,26 @@ void FrameStageNotify_hook(void* thisptr, int stage) {
 CatVar override_fov_zoomed(CV_FLOAT, "fov_zoomed", "0", "FOV override (zoomed)", "Overrides FOV with this value when zoomed in (default FOV when zoomed is 20)");
 CatVar override_fov(CV_FLOAT, "fov", "0", "FOV override", "Overrides FOV with this value");
 
+void PostRender_hook(void* thisptr) {
+	((PostRender_t*)hooks::hkClientMode->GetMethod(off_PostRender))(thisptr);
+}
+
+void SceneEnd_hook(void* thisptr) {
+	IMatRenderContext* ctx = g_IMaterialSystem->GetRenderContext();
+	logging::Info("ctx: 0x%08x", ctx);
+	/*ctx->PushRenderTargetAndViewport();
+	ITexture* tx = g_IMaterialSystem->FindTexture("_rt_FullFrameFB", "RenderTargets");
+	ctx->SetRenderTarget(tx);
+	ctx->Viewport(0, 0, 1920, 1080);// FIXME
+	logging::Info("blend %f", g_IVRenderView->GetBlend());
+	ctx->ClearColor3ub(0, 0, 0);
+	ctx->ClearBuffers(false, true, false);
+	static float mod[] = { 0.0f, 1.0f, 0.0f, 0.0f};
+	g_IVRenderView->SetColorModulation(mod);*/
+	((SceneEnd_t*)hooks::hkRenderView->GetMethod(off_SceneEnd))(thisptr);
+	//ctx->PopRenderTargetAndViewport();
+}
+
 void OverrideView_hook(void* thisptr, CViewSetup* setup) {
 	SEGV_BEGIN;
 	((OverrideView_t*)hooks::hkClientMode->GetMethod(hooks::offOverrideView))(thisptr, setup);

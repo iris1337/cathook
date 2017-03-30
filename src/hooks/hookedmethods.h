@@ -28,11 +28,17 @@ typedef void(LevelInit_t)(void*, const char*);
 typedef void(LevelShutdown_t)(void*);
 typedef void(BeginFrame_t)(IStudioRender*);
 typedef bool(*CanInspect_t)(IClientEntity*);
+typedef void(PostRender_t)(void*);
+typedef void(SceneEnd_t)(void*);
 //typedef void(*CInput__CreateMove_t)(void*, int, float, bool);
 //void CInput__CreateMove_hook(void*, int sequence_number, float input_sample_frametime, bool active);
 bool CanInspect_hook(IClientEntity*);
+void PostRender_hook(void*);
+constexpr unsigned int off_PostRender = 29;
+constexpr unsigned int off_SceneEnd = 9;
 const unsigned int offCanInspect = 512;
 void BeginFrame_hook(IStudioRender*);
+void SceneEnd_hook(void*);
 
 #include "CreateMove.h"
 #include "PaintTraverse.h"

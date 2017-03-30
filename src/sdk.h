@@ -23,6 +23,7 @@
 #include <globalvars_base.h>
 #include <engine/ivmodelinfo.h>
 #include <inputsystem/iinputsystem.h>
+#include <ivrenderview.h>
 #include <mathlib/vector.h>
 #include <icvar.h>
 #include <Color.h>
