@@ -47,6 +47,8 @@ IVDebugOverlay* g_IVDebugOverlay = nullptr;
 IVModelRender* g_IVModelRender = nullptr;
 IMaterialSystem* g_IMaterialSystem = nullptr;
 IVRenderView* g_IVRenderView = nullptr;
+class IScreenSpaceEffectManager;
+IScreenSpaceEffectManager* g_ISSEffects = nullptr;
 
 template<typename T>
 T* BruteforceInterface(std::string name, sharedobj::SharedObject* object, int start) {
@@ -61,7 +63,10 @@ T* BruteforceInterface(std::string name, sharedobj::SharedObject* object, int st
 		for (int j = 0; j < zeros; j++) stream << '0';
 		stream << i;
 		result = reinterpret_cast<T*>(object->CreateInterface(stream.str()));
-		if (result) return result;
+		if (result) {
+			logging::Info("Using interface %s", stream.str().c_str());
+			return result;
+		}
 	}
 	logging::Info("RIP Software: can't create interface %s!", name.c_str());
 	exit(0);
@@ -85,7 +90,7 @@ void CreateInterfaces() {
 	g_IInputSystem = BruteforceInterface<IInputSystem>("InputSystemVersion", sharedobj::inputsystem);
 	g_IStudioRender = BruteforceInterface<IStudioRender>("VStudioRender", sharedobj::studiorender);
 	g_IVDebugOverlay = BruteforceInterface<IVDebugOverlay>("VDebugOverlay", sharedobj::engine);
-	g_IMaterialSystem = BruteforceInterface<IMaterialSystem>("VMaterialSystem", sharedobj::materialsystem);
+	g_IMaterialSystem = BruteforceInterface<IMaterialSystem>("VMaterialSystem", sharedobj::materialsystem, 81);
 	g_IVModelRender = BruteforceInterface<IVModelRender>("VEngineModel", sharedobj::engine);
 	HSteamPipe sp = g_ISteamClient->CreateSteamPipe();
 	HSteamUser su = g_ISteamClient->ConnectToGlobalUser(sp);
@@ -100,6 +105,8 @@ void CreateInterfaces() {
 		g_IMatSystemSurface = **reinterpret_cast<IMatSystemSurface***>((uintptr_t)19 + gSignatures.GetClientSignature("FF 92 94 02 00 00 8B 8D C4 FE FF FF 89 85 B0 FE FF FF A1 ? ? ? ? 8B 10 89 4C 24 0C"));
 	else if (TF2C)
 		g_IMatSystemSurface = **reinterpret_cast<IMatSystemSurface***>((uintptr_t)53 + gSignatures.GetClientSignature("C7 44 24 1C FF 00 00 00 C7 44 24 18 FF 00 00 00 C7 44 24 14 FF 00 00 00 C7 44 24 10 00 00 00 00 89 74 24 08 8B 83 D0 E1 00 00 89 95 A4 FE FF FF 89 44 24 04 A1 ? ? ? ? 89 04 24 FF 91 88 02 00 00 8B 95 A4 FE FF FF A1 ? ? ? ? 29 FA 8B 08 89 54 24 0C"));
+	g_ISSEffects = **reinterpret_cast<IScreenSpaceEffectManager***>((gSignatures.GetClientSignature("89 34 24 89 44 24 08 E8 ? ? ? ? C7 44 24 08 00 00 00 00 C7 44 24 04 ? ? ? ? 89 34 24 E8 ? ? ? ? A1 ? ? ? ? 8B 10 89 04 24 89 74 24 08 C7 44 24 04 ? ? ? ? FF 52 0C A1 ? ? ? ? 8B 10 C7 44 24 04 ? ? ? ? 89 04 24 FF 52 14 E9 AF FD FF FF")) + (uintptr_t)37);
+	logging::Info("Got IScreenSpaceEffectManager: 0x%08x", g_ISSEffects);
 	g_ISteamUser = g_ISteamClient->GetISteamUser(su, sp, "SteamUser018");
 	g_IAchievementMgr = g_IEngine->GetAchievementMgr();
 	g_ISteamUserStats = g_ISteamClient->GetISteamUserStats(su, sp, "STEAMUSERSTATS_INTERFACE_VERSION011");

@@ -160,7 +160,7 @@ void hack::Initialize() {
 	hooks::hkClientMode->Apply();
 	hooks::hkRenderView = new hooks::VMTHook();
 	hooks::hkRenderView->Init((void*)g_IVRenderView, 0);
-	hooks::hkRenderView->HookMethod((void*)SceneEnd_hook, off_SceneEnd);
+	//hooks::hkRenderView->HookMethod((void*)SceneEnd_hook, off_SceneEnd);
 	hooks::hkRenderView->Apply();
 	hooks::hkStudioRender = new hooks::VMTHook();
 	hooks::hkStudioRender->Init((void*)g_IStudioRender, 0);
@@ -172,6 +172,10 @@ void hack::Initialize() {
 	hooks::hkClient->HookMethod((void*)DispatchUserMessage_hook, hooks::offFrameStageNotify + 1);
 	hooks::hkClient->HookMethod((void*)IN_KeyEvent_hook, hooks::offKeyEvent);
 	hooks::hkClient->Apply();
+	hooks::hkScreenSpaceEffects = new hooks::VMTHook();
+	hooks::hkScreenSpaceEffects->Init((void*)g_ISSEffects, 0);
+	hooks::hkScreenSpaceEffects->HookMethod((void*)RenderEffects_hook, 10);
+	hooks::hkScreenSpaceEffects->Apply();
 	if (TF2) g_GlowObjectManager = *reinterpret_cast<CGlowObjectManager**>(gSignatures.GetClientSignature("C1 E0 05 03 05") + 5);
 	InitStrings();
 	hacks::shared::killsay::Init();

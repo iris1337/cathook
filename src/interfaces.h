@@ -44,8 +44,10 @@ class IStudioRender;
 class IVDebugOverlay;
 class IVModelRender;
 class IVRenderView;
-class IMaterialSystem;
+class IMaterialSystemRE;
+class IScreenSpaceEffectManager;
 
+extern IScreenSpaceEffectManager* g_ISSEffects;
 extern ISteamClient* g_ISteamClient;
 extern ISteamFriends* g_ISteamFriends;
 extern IVEngineClient013* g_IEngine;

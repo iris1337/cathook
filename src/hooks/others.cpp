@@ -101,9 +101,9 @@ void PostRender_hook(void* thisptr) {
 }
 
 void SceneEnd_hook(void* thisptr) {
-	IMatRenderContext* ctx = g_IMaterialSystem->GetRenderContext();
+	/*IMatRenderContext* ctx = g_IMaterialSystem->GetRenderContext();
 	logging::Info("ctx: 0x%08x", ctx);
-	/*ctx->PushRenderTargetAndViewport();
+	ctx->PushRenderTargetAndViewport();
 	ITexture* tx = g_IMaterialSystem->FindTexture("_rt_FullFrameFB", "RenderTargets");
 	ctx->SetRenderTarget(tx);
 	ctx->Viewport(0, 0, 1920, 1080);// FIXME
@@ -111,11 +111,27 @@ void SceneEnd_hook(void* thisptr) {
 	ctx->ClearColor3ub(0, 0, 0);
 	ctx->ClearBuffers(false, true, false);
 	static float mod[] = { 0.0f, 1.0f, 0.0f, 0.0f};
-	g_IVRenderView->SetColorModulation(mod);*/
-	((SceneEnd_t*)hooks::hkRenderView->GetMethod(off_SceneEnd))(thisptr);
-	//ctx->PopRenderTargetAndViewport();
+	g_IVRenderView->SetColorModulation(mod);
+	ctx->PopRenderTargetAndViewport();
+	((SceneEnd_t*)hooks::hkRenderView->GetMethod(off_SceneEnd))(thisptr);*/
+
 }
 
+void RenderEffects_hook(void* thisptr, int x, int y, int w, int h) {
+	IMatRenderContext* ctx = vfunc<IMatRenderContext*(*)(IMaterialSystem*)>(g_IMaterialSystem, 100, 0)(g_IMaterialSystem);//g_IMaterialSystem->GetRenderContext();
+	//ctx->PushRenderTargetAndViewport();
+	ITexture* tx = vfunc<ITexture*(*)(IMaterialSystem*, const char*, const char*, bool, int)>(g_IMaterialSystem, 81, 0)(g_IMaterialSystem, "_rt_FullFrameFB", "RenderTargets", true, 0);//g_IMaterialSystem->FindTexture();
+	//ctx->SetRenderTarget(tx);
+	ctx->SetRenderTarget(tx);
+	ctx->Viewport(0, 0, 1920, 1080);// FIXME
+	ctx->ClearColor3ub(0, 0, 0);
+	ctx->ClearBuffers(false, true, false);
+	if (CE_GOOD(LOCAL_E)) RAW_ENT(LOCAL_E)->DrawModel(1);
+	//static float mod[] = { 0.0f, 1.0f, 0.0f, 0.0f};
+	//g_IVRenderView->SetColorModulation(mod);
+	//ctx->PopRenderTargetAndViewport();
+	((RenderEffects_t*)hooks::hkScreenSpaceEffects->GetMethod(10))(thisptr, x, y, w, h);
+}
 void OverrideView_hook(void* thisptr, CViewSetup* setup) {
 	SEGV_BEGIN;
 	((OverrideView_t*)hooks::hkClientMode->GetMethod(hooks::offOverrideView))(thisptr, setup);

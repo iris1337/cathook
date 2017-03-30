@@ -39,6 +39,7 @@ extern VMTHook* hkClientDLL;
 extern VMTHook* hkMatSurface;
 extern VMTHook* hkStudioRender;
 extern VMTHook* hkRenderView;
+extern VMTHook* hkScreenSpaceEffects;
 
 extern unsigned int offHandleInputEvent;
 extern unsigned int offPaintTraverse;

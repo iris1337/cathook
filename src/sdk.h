@@ -18,6 +18,9 @@
 #include <icliententitylist.h>
 #include <cdll_int.h>
 #include <inetchannelinfo.h>
+#include <materialsystem/imesh.h>
+#include <shaderapi/shareddefs.h>
+#include <shaderapi/ishaderutil.h>
 #include <gametrace.h>
 #include <engine/IEngineTrace.h>
 #include <globalvars_base.h>
@@ -50,6 +53,7 @@
 #include <vgui/Cursor.h>
 #include <engine/ivdebugoverlay.h>
 
+#include "sdk/IMaterialSystemRE.h"
 #include "sdk/in_buttons.h"
 #include "sdk/iinput.h"
 
